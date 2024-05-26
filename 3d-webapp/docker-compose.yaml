@@ -1,0 +1,7 @@
+version: '3.9'
+
+services:
+  web:
+    image: 'rishikeshops/3d-webapp:latest'
+    ports:
+      - "5000:5000"

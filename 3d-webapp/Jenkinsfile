@@ -1,0 +1,29 @@
+pipeline {
+    agent { label 'ironman' }
+    
+    stages{
+        stage('Code'){
+            steps{
+                git url: 'https://github.com/RishikeshOps/3d-webapp-Kubernetes.git', branch: 'master' 
+            }
+        }
+        stage('Build'){
+            steps{
+                sh 'docker build -t rishikeshops/3d-webapp:latest 3d-webapp/.'
+            }
+        }
+        stage('Push'){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
+        	     sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                 sh 'docker push rishikeshops/3d-webapp:latest'
+                }
+            }
+        }
+        stage('Deploy'){
+            steps{
+                sh "docker-compose down && docker-compose up -d"
+            }
+        }
+    }
+}
